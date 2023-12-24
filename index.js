@@ -1,8 +1,12 @@
 console.log("Hello");
+const express = require("express");
 const dotenv = require("dotenv");
 const { Telegraf } = require("telegraf");
 const { replyPhoto } = require("./src/reply_photo");
 const { downloadVideo } = require("./src/download_video");
+
+const app = express();
+const PORT=process.env.PORT || 3000;
 
 // const removeBg =require("./remove.js");
 // dotenv.config();
@@ -84,3 +88,4 @@ bot.use(async (ctx, next) => {
 });
 
 bot.launch();
+app.listen(process.env.PORT || 3000, () => console.log(`App is running on ${PORT}`));
