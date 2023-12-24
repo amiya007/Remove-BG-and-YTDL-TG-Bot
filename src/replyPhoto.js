@@ -19,7 +19,7 @@ async function replyPhoto(ctx) {
         blob.arrayBuffer().then((arrBuffer) => {
           console.log(arrBuffer);
           data = Buffer.from(arrBuffer);
-          fs.writeFile(`BG-removed.png`, data, async (err) => {
+          fs.writeFile(`assets/BG-removed.png`, data, async (err) => {
             if (err) {
               console.log(err);
               ctx.reply("Something went wrong.☹️\nPlease Try again later.");
@@ -27,7 +27,7 @@ async function replyPhoto(ctx) {
               try {
                 await ctx.telegram.sendDocument(
                   ctx.chat.id,
-                  { source: "BG-removed.png" },
+                  { source: "assets/BG-removed.png" },
                   {
                     reply_to_message_id: ctx.message.message_id,
                     caption: "Here is your photo.",
