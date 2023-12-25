@@ -1,12 +1,10 @@
-console.log("Hello");
 const express = require("express");
 const dotenv = require("dotenv");
 const { Telegraf } = require("telegraf");
-const { replyPhoto } = require("./src/reply_photo");
-const { downloadVideo } = require("./src/download_video");
+const { replyPhoto } = require("./reply_photo");
+const { downloadVideo } = require("./download_video");
 
 const app = express();
-const PORT=process.env.PORT || 3000;
 
 // const removeBg =require("./remove.js");
 // dotenv.config();
@@ -16,7 +14,7 @@ const PORT=process.env.PORT || 3000;
 
 dotenv.configDotenv();
 console.log(process.env.TELEGRAM_API_KEY);
-const bot = new Telegraf(process.env.TELEGRAM_API_KEY);
+const bot = new Telegraf(process.env.TELEGRAM_API_KEY, { polling: true });
 
 bot.start(async (ctx) => {
   await ctx.sendDocument({ source: "assets/hello.gif" }),
@@ -87,5 +85,23 @@ bot.use(async (ctx, next) => {
   next();
 });
 
-bot.launch();
-app.listen(process.env.PORT || 3000, () => console.log(`App is running on ${PORT}`));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.json());
+  const PORT = process.env.PORT || 3000;
+
+  app.use(bot.webhookCallback("/secret-path"));
+  bot.telegram.setWebhook("https://cool-kheer-e7d471.netlify.app/secret-path");
+
+  app.get("/", (req, res) => {
+    // res.redirect("https://www.google.com");
+    res.send('<h1>Hello, World!</h1><a href="/launch">Launch Link</a>');
+  });
+
+  app.listen(PORT, () => {
+
+    console.log(`Bot listening on port ${PORT}`);
+  });
+} else {
+  // Use Long Polling for development
+  bot.launch();
+}
